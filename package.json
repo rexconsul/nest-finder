@@ -1,12 +1,12 @@
 {
   "name": "nest-finder",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "type": "module",
+  "description": "Nest Finder Real Estate App",
+  "main": "index.ts",
   "scripts": {
-    "dev": "nodemon api/index.js",
-    "start": "node api/index.js"
+    "build": "npx tsc -p .",
+    "dev": "nodemon dist/index.js",
+    "start": "node dist/index.js"
   },
   "keywords": [],
   "author": "",
@@ -16,5 +16,12 @@
     "express": "^4.21.0",
     "mongoose": "^8.6.2",
     "nodemon": "^3.1.4"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/mongoose": "^5.11.97",
+    "@types/node": "^22.5.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2"
   }
 }

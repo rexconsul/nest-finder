@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "lib": ["es5", "es6", "dom"],
+    "target": "ES6",
+    "module": "CommonJS",
+    "rootDir": "api",
+    "outDir": "dist",
+    "sourceMap": true,
+    "noEmitOnError": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "alwaysStrict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "removeComments": true
+  },
+  "include": [
+    "./api/**/*.ts"
+  ]
+}
