@@ -1,8 +1,14 @@
 import { Request, Response } from 'express';
 import User from '../models/user.model';
 import bcryptjs from 'bcryptjs';
+import { errorHandler } from '../utils/error';
+import jwt from 'jsonwebtoken';
 
-export const signUp = async (req: Request, res: Response, next: any) => {
+export const signUp = async (
+  req: Request,
+  res: Response,
+  next: any
+): Promise<void> => {
   const { username, email, password } = req.body;
   const hashedPassword = bcryptjs.hashSync(password, 10);
   const newUser = new User({ username, email, password: hashedPassword });
@@ -11,6 +17,42 @@ export const signUp = async (req: Request, res: Response, next: any) => {
     await newUser.save();
     res.status(201).json('User created successfully!');
   } catch (error: any) {
+    next(error);
+  }
+};
+
+export const signIn = async (
+  req: Request,
+  res: Response,
+  next: any
+): Promise<void> => {
+  const { email, password } = req.body;
+
+  try {
+    const validUser = await User.findOne({ email });
+    if (!validUser) {
+      return next(errorHandler(404, 'User not found!'));
+    }
+
+    const validPassword = await bcryptjs.compareSync(
+      password,
+      validUser.password as string
+    );
+    if (!validPassword) {
+      return next(errorHandler(401, 'Wrong credential!'));
+    }
+
+    const token = jwt.sign(
+      { id: validUser._id },
+      process.env.JWT_SECRET as any | null
+    );
+    const { password: _, ...rest} = validUser.toObject();
+
+    res
+      .cookie('access_token', token, { httpOnly: true })
+      .status(200)
+      .json(rest);
+  } catch (error) {
     next(error);
   }
 };

@@ -1,5 +1,14 @@
-export const errorHandler = (msg: string, cause: Error): Error => {
-  const error = new Error(msg)
-  error.stack = msg + cause
-  return error;
+class HttpError extends Error {
+  statusCode: number;
+
+  constructor(message: string, statusCode: number) {
+    super(message);
+    this.name = this.constructor.name;
+    this.statusCode = statusCode;
+    Error.captureStackTrace(this, this.constructor);
+  }
 }
+
+export const errorHandler = (statusCode: number, msg: string): HttpError => {
+  return new HttpError(msg, statusCode);
+};
