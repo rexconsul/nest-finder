@@ -80,8 +80,6 @@ export const google = async (req: Request, res: Response, next: any) => {
 
       const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
 
-      console.log(req.body.name);
-
       const newUserName: string =
         req.body.name.split(' ').join('').toLowerCase() +
         Math.random().toString(36).slice(-8);
@@ -92,8 +90,6 @@ export const google = async (req: Request, res: Response, next: any) => {
         password: hashedPassword,
         avatar: req.body.photo,
       });
-
-      console.log(newUser);
 
       await newUser.save();
 
