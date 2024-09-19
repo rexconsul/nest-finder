@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import User from '../models/user.model';
 import bcryptjs from 'bcryptjs';
 import { errorHandler } from '../utils/error';
@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken';
 export const signUp = async (
   req: Request,
   res: Response,
-  next: any
+  next: NextFunction
 ): Promise<void> => {
   const { username, email, password } = req.body;
   const hashedPassword = bcryptjs.hashSync(password, 10);
@@ -24,7 +24,7 @@ export const signUp = async (
 export const signIn = async (
   req: Request,
   res: Response,
-  next: any
+  next: NextFunction
 ): Promise<void> => {
   const { email, password } = req.body;
 
@@ -57,7 +57,7 @@ export const signIn = async (
   }
 };
 
-export const google = async (req: Request, res: Response, next: any) => {
+export const google = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = await User.findOne({ email: req.body.email });
 

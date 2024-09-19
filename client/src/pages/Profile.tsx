@@ -41,7 +41,6 @@ export default function Profile() {
   const fileUploadHandler = (file: File) => {
     const storage = getStorage(app);
     const fileName = new Date().getTime() + '_' + file.name;
-    console.log(fileName);
     const storageRef = ref(storage, fileName);
     const uploadTask = uploadBytesResumable(storageRef, file);
 
