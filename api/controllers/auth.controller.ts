@@ -57,11 +57,16 @@ export const signIn = async (
   }
 };
 
-export const google = async (req: Request, res: Response, next: NextFunction) => {
+export const google = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const user = await User.findOne({ email: req.body.email });
 
     if (user) {
+      // User is already in DB
       const token = jwt.sign(
         { id: user._id },
         process.env.JWT_SECRET as any | null
@@ -74,6 +79,7 @@ export const google = async (req: Request, res: Response, next: NextFunction) =>
         .status(200)
         .json(rest);
     } else {
+      // User is not in DB so need to register first
       const generatedPassword =
         Math.random().toString(36).slice(-8) +
         Math.random().toString(36).slice(-8);
@@ -103,6 +109,21 @@ export const google = async (req: Request, res: Response, next: NextFunction) =>
         .status(200)
         .json(rest);
     }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const signOut = async (
+  _req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    res
+      .clearCookie('access_token')
+      .status(200)
+      .json('User has been logged out');
   } catch (error) {
     next(error);
   }

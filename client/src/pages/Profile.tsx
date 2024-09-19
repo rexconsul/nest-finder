@@ -16,6 +16,9 @@ import {
   deleteUserFailure,
   deleteUserStart,
   deleteUserSuccess,
+  signOutUserStart,
+  signOutUserFailure,
+  signOutUserSuccess,
 } from '../redux/user/userSlice';
 
 interface UserFormData {
@@ -127,6 +130,22 @@ export default function Profile() {
     }
   };
 
+  const signOutHandler = async () => {
+    try {
+      dispatch(signOutUserStart())
+
+      const res = await fetch('/api/auth/signout');
+      const data = await res.json();
+
+      if (data.success === false) return;
+
+      dispatch(signOutUserSuccess())
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      dispatch(signOutUserFailure(error.message))
+    }
+  }
+
   const renderUploadStatus = () => {
     if (fileUploadError) {
       return (
@@ -207,12 +226,12 @@ export default function Profile() {
       </form>
       <div className="flex justify-between mt-5">
         <span
-          onClick={deleteUserHandler}
           className="text-red-700 cursor-pointer"
+          onClick={deleteUserHandler}
         >
           Delete Account
         </span>
-        <span className="text-red-700 cursor-pointer">Sign Out</span>
+        <span className="text-red-700 cursor-pointer" onClick={signOutHandler}>Sign Out</span>
       </div>
       <p className="text-red-700 mt-5">{error ? error : ''}</p>
       <p className="text-green-700 mt-5">
