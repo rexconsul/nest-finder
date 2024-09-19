@@ -5,7 +5,7 @@ import { signInStart, signInFailure, signInSuccess } from '../redux/user/userSli
 import { RootState } from '../redux/store';
 import OAuth from '../components/OAuth';
 
-export default function SignIn() {
+export default function SignIn(): JSX.Element {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({});

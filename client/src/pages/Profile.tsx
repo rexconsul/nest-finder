@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react';
+import React, { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import {
@@ -20,6 +20,7 @@ import {
   signOutUserFailure,
   signOutUserSuccess,
 } from '../redux/user/userSlice';
+import { Link } from 'react-router-dom';
 
 interface UserFormData {
   username?: string;
@@ -27,7 +28,7 @@ interface UserFormData {
   email?: string;
 }
 
-export default function Profile() {
+export default function Profile(): JSX.Element {
   const dispatch = useDispatch();
   const { currentUser, loading, error } = useSelector(
     (state: RootState) => state.user
@@ -223,6 +224,9 @@ export default function Profile() {
         >
           {loading ? 'Loading' : 'Update'}
         </button>
+        <Link className='bg-green-700 text-white p-3 rounded-lg uppercase text-center hover:opacity-95' to={"/create-listing"}>
+          Create Listing
+        </Link>
       </form>
       <div className="flex justify-between mt-5">
         <span

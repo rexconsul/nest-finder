@@ -2,7 +2,7 @@ import { ChangeEvent, SyntheticEvent, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import OAuth from '../components/OAuth';
 
-export default function SignUp() {
+export default function SignUp(): JSX.Element {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({});
   const [error, setError] = useState(null);
