@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { errorHandler } from '../utils/error';
 import bcryptjs from 'bcryptjs';
 import User from '../models/user.model';
+import Listing from '../models/listing.model';
 
 export const test = (_req: Request, res: Response): void => {
   res.json({
@@ -59,3 +60,17 @@ export const deleteUser = async (
     res.clearCookie('access_token').status(200).json('User has been deleted');
   } catch (error) {}
 };
+
+export const getUserListings = async (req: Request, res: Response, next: NextFunction) => {
+
+  if (req.body.user.id !== req.params.id) {
+    return next(errorHandler(401, 'You can only view your own listings!'))
+  } else {
+    try {
+      const listings = await Listing.find({ userData: req.params.id });
+      res.status(200).json(listings);
+    } catch (error) {
+      next(error)
+    }
+  }
+}
