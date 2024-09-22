@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import Listing from '../models/listing.model';
 import { errorHandler } from '../utils/error';
+import { isValidObjectId } from 'mongoose';
 
 export const createListing = async (
   req: Request,
@@ -20,6 +21,10 @@ export const deleteListing = async (
   res: Response,
   next: NextFunction
 ) => {
+  if (!isValidObjectId(req.params.id)) {
+    return next(errorHandler(400, 'Invalid listing ID format!'));
+  }
+
   const listing = await Listing.findById(req.params.id);
 
   if (!listing) {
@@ -35,6 +40,38 @@ export const deleteListing = async (
 
     return res.status(200).json('Listing has been deleted');
   } catch (error) {
+    next(error);
+  }
+};
+
+export const updateListing = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (!isValidObjectId(req.params.id)) {
+    return next(errorHandler(400, 'Invalid listing ID format!'));
+  }
+
+  const listing = await Listing.findById(req.params.id);
+
+  if (!listing) {
+    return next(errorHandler(404, 'Listing not found!'));
+  }
+
+  if (req.body.user.id !== listing.userData) {
+    return next(errorHandler(401, 'You can only delete your own listings!'));
+  }
+
+  try {
+    const updatedListing = await Listing.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+
+    return res.status(200).json(updatedListing);
+  } catch (error: any) {
     next(error);
   }
 };
