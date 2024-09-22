@@ -214,6 +214,26 @@ export default function Profile(): JSX.Element {
     }
   };
 
+  const deleteListingHandler = async (listingId: string) => {
+    try {
+      const res = await fetch(`/api/listing/delete/${listingId}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+
+      if (data.success === false) {
+        console.log(data.message);
+        return;
+      }
+
+      setUserListings((prev) =>
+        prev.filter((listing) => listing._id !== listingId)
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     if (file) {
       fileUploadHandler(file);
@@ -319,7 +339,10 @@ export default function Profile(): JSX.Element {
                 <p>{listing.name}</p>
               </Link>
               <div className="flex flex-col items-center">
-                <button className="text-red-700 uppercase hover:underline">
+                <button
+                  onClick={() => deleteListingHandler(listing._id)}
+                  className="text-red-700 uppercase hover:underline"
+                >
                   Delete
                 </button>
                 <button className="text-green-700 uppercase hover:underline">
