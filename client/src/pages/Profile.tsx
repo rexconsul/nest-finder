@@ -1,4 +1,10 @@
-import React, { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react';
+import React, {
+  ChangeEvent,
+  FormEvent,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import {
@@ -28,6 +34,23 @@ interface UserFormData {
   email?: string;
 }
 
+interface IListing {
+  _id: string;
+  name: string;
+  description: string;
+  address: string;
+  regularPrice: number;
+  discountedPrice: number;
+  bathrooms: number;
+  bedrooms: number;
+  isFurnished: boolean;
+  hasParking: boolean;
+  type: string;
+  isOffer: boolean;
+  imageUrls: string[];
+  userData: string;
+}
+
 export default function Profile(): JSX.Element {
   const dispatch = useDispatch();
   const { currentUser, loading, error } = useSelector(
@@ -39,6 +62,8 @@ export default function Profile(): JSX.Element {
   const [fileUploadError, setFileUploadError] = useState<boolean>(false);
   const [formData, setFormData] = useState<Partial<UserFormData>>({});
   const [updateSuccess, setUpdateSuccess] = useState<boolean>(false);
+  const [userListings, setUserListings] = useState(Array<IListing>);
+  const [showListingsError, setShowListingsError] = useState<boolean>(false);
 
   const imgClickHandler = () => {
     if (fileRef.current) {
@@ -133,19 +158,19 @@ export default function Profile(): JSX.Element {
 
   const signOutHandler = async () => {
     try {
-      dispatch(signOutUserStart())
+      dispatch(signOutUserStart());
 
       const res = await fetch('/api/auth/signout');
       const data = await res.json();
 
       if (data.success === false) return;
 
-      dispatch(signOutUserSuccess())
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      dispatch(signOutUserSuccess());
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      dispatch(signOutUserFailure(error.message))
+      dispatch(signOutUserFailure(error.message));
     }
-  }
+  };
 
   const renderUploadStatus = () => {
     if (fileUploadError) {
@@ -169,6 +194,24 @@ export default function Profile(): JSX.Element {
     }
 
     return null;
+  };
+
+  const showListingHandler = async () => {
+    try {
+      setShowListingsError(false);
+      const res = await fetch(`/api/user/listings/${currentUser?._id}`);
+      const data = await res.json();
+
+      if (data.success === false) {
+        setShowListingsError(true);
+        return;
+      }
+
+      setUserListings(data);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      setShowListingsError(true);
+    }
   };
 
   useEffect(() => {
@@ -224,7 +267,10 @@ export default function Profile(): JSX.Element {
         >
           {loading ? 'Loading' : 'Update'}
         </button>
-        <Link className='bg-green-700 text-white p-3 rounded-lg uppercase text-center hover:opacity-95' to={"/create-listing"}>
+        <Link
+          className="bg-green-700 text-white p-3 rounded-lg uppercase text-center hover:opacity-95"
+          to={'/create-listing'}
+        >
           Create Listing
         </Link>
       </form>
@@ -235,12 +281,55 @@ export default function Profile(): JSX.Element {
         >
           Delete Account
         </span>
-        <span className="text-red-700 cursor-pointer" onClick={signOutHandler}>Sign Out</span>
+        <span className="text-red-700 cursor-pointer" onClick={signOutHandler}>
+          Sign Out
+        </span>
       </div>
       <p className="text-red-700 mt-5">{error ? error : ''}</p>
       <p className="text-green-700 mt-5">
         {updateSuccess ? 'User is updated successfully' : ''}
       </p>
+      <button onClick={showListingHandler} className="text-green-700 w-full">
+        Show Listings
+      </button>
+      <p className="text-red-700 mt-5">
+        {showListingsError ? 'Error showing listings' : ''}
+      </p>
+      {userListings && userListings.length > 0 && (
+        <div className="flex flex-col gap-4">
+          <h1 className="text-center mt-7 text-2xl font-semibold">
+            Your Listings
+          </h1>
+          {userListings.map((listing) => (
+            <div
+              key={listing._id}
+              className="flex border rounded-lg p-3 justify-between items-center gap-4"
+            >
+              <Link to={`/listing/${listing._id}`}>
+                <img
+                  className="h-16 w-16 object-contain"
+                  src={listing.imageUrls[0]}
+                  alt="listing_cover_image"
+                />
+              </Link>
+              <Link
+                className="text-slate-700 font-semibold hover:underline truncate flex-1"
+                to={`/listing/${listing._id}`}
+              >
+                <p>{listing.name}</p>
+              </Link>
+              <div className="flex flex-col items-center">
+                <button className="text-red-700 uppercase hover:underline">
+                  Delete
+                </button>
+                <button className="text-green-700 uppercase hover:underline">
+                  Edit
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
