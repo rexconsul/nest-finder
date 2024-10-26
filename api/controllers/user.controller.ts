@@ -10,6 +10,24 @@ export const test = (_req: Request, res: Response): void => {
   });
 };
 
+export const getUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (!user) return next(errorHandler(404, 'User not found!'));
+
+    const { password: pass, ...rest } = user.toObject();
+
+    res.status(200).json(rest);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const updateUser = async (
   req: Request,
   res: Response,
@@ -61,16 +79,19 @@ export const deleteUser = async (
   } catch (error) {}
 };
 
-export const getUserListings = async (req: Request, res: Response, next: NextFunction) => {
-
+export const getUserListings = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   if (req.body.user.id !== req.params.id) {
-    return next(errorHandler(401, 'You can only view your own listings!'))
+    return next(errorHandler(401, 'You can only view your own listings!'));
   } else {
     try {
       const listings = await Listing.find({ userData: req.params.id });
       res.status(200).json(listings);
     } catch (error) {
-      next(error)
+      next(error);
     }
   }
-}
+};

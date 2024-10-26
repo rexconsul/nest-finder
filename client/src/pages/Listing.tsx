@@ -4,24 +4,18 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore from 'swiper';
 import { Navigation } from 'swiper/modules';
 import 'swiper/css/bundle';
-import { FaBath, FaBed, FaChair, FaMapMarkerAlt, FaParking, FaShare } from 'react-icons/fa';
-
-export interface IListing {
-  _id: string;
-  name: string;
-  description: string;
-  address: string;
-  regularPrice: number;
-  discountedPrice: number;
-  bathrooms: number;
-  bedrooms: number;
-  isFurnished: boolean;
-  hasParking: boolean;
-  type: string;
-  isOffer: boolean;
-  imageUrls: string[];
-  userData: string;
-}
+import {
+  FaBath,
+  FaBed,
+  FaChair,
+  FaMapMarkerAlt,
+  FaParking,
+  FaShare,
+} from 'react-icons/fa';
+import { useSelector } from 'react-redux';
+import { RootState } from '../redux/store';
+import Contact from '../components/Contact';
+import IListing from '../types/listing';
 
 export default function Listing() {
   SwiperCore.use([Navigation]);
@@ -30,6 +24,8 @@ export default function Listing() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
+  const [contact, setContact] = useState<boolean>(false);
+  const { currentUser } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
     try {
@@ -145,6 +141,12 @@ export default function Listing() {
                 {listing.isFurnished ? 'Furnished' : 'Unfurnished'}
               </li>
             </ul>
+            {currentUser && listing.userData !== currentUser._id && !contact && (
+              <button onClick={() => setContact(true)} className="bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 p-3">
+                Contact landlord
+              </button>
+            )}
+            {contact && <Contact listing={listing}/>}
           </div>
         </div>
       )}
