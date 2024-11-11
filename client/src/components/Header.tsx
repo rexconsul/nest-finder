@@ -1,10 +1,32 @@
 import { FaSearch } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
+import { useEffect, useState } from 'react';
 
 function Header(): JSX.Element {
+  const [searchTerm, setSearchTerm] = useState<string>('');
   const { currentUser } = useSelector((state: RootState) => state.user);
+  const navigate = useNavigate();
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const urlParmas: URLSearchParams = new URLSearchParams(
+      window.location.search
+    );
+    urlParmas.set('searchTerm', searchTerm);
+    const searchQuery: string = urlParmas.toString();
+    navigate(`/search?${searchQuery}`);
+  };
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchTermFromUrl = urlParams.get('searchTerm');
+
+    if (searchTermFromUrl) {
+      setSearchTerm(searchTermFromUrl);
+    }
+  }, [window.location.search]);
 
   return (
     <header className="bg-slate-200 shadow-md">
@@ -15,13 +37,20 @@ function Header(): JSX.Element {
             <span className="text-slate-700">Finder</span>
           </h1>
         </Link>
-        <form className="bg-slate-100 p-3 rounded-lg flex items-center">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-slate-100 p-3 rounded-lg flex items-center"
+        >
           <input
             type="text"
             placeholder="Search..."
             className="bg-transparent focus:outline-none w-24 sm:w-64"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <FaSearch className="text-slate-600" />
+          <button>
+            <FaSearch className="text-slate-600" />
+          </button>
         </form>
         <ul className="flex gap-4">
           <Link to="/">
@@ -36,7 +65,11 @@ function Header(): JSX.Element {
           </Link>
           <Link to="/profile">
             {currentUser ? (
-              <img className='rounded-full h-7 w-7 object-cover' src={currentUser.avatar} alt='profile' />
+              <img
+                className="rounded-full h-7 w-7 object-cover"
+                src={currentUser.avatar}
+                alt="profile"
+              />
             ) : (
               <li className="text-slate-700 hover:underline"> Sign-In</li>
             )}
