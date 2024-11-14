@@ -27,7 +27,7 @@ import {
   signOutUserSuccess,
 } from '../redux/user/userSlice';
 import { Link } from 'react-router-dom';
-import { IListing } from './Listing';
+import IListing from '../types/listing';
 
 interface UserFormData {
   username?: string;
