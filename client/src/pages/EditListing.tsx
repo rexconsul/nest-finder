@@ -194,7 +194,7 @@ export default function UpdateListing(): JSX.Element {
   useEffect(() => {
     const fetchListing = async () => {
       const listingId = params.listingId;
-      const res = await fetch(`/api/listing/${listingId}`)
+      const res = await fetch(`/api/listing/get/${listingId}`)
       const data = await res.json();
 
       if (data.success === false) {

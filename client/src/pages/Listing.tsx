@@ -111,7 +111,7 @@ export default function Listing() {
                 listing?.regularPrice != null &&
                 listing?.discountedPrice != null && (
                   <p className="bg-green-900 w-full max-w-[200px] text-white text-center p-1 rounded-md">
-                    ${+listing.regularPrice - +listing.discountedPrice}
+                    ${+listing.regularPrice - +listing.discountedPrice} OFF
                   </p>
                 )}
             </div>
