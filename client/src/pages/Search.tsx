@@ -26,8 +26,7 @@ export default function Search(): JSX.Element {
   });
   const [loading, setLoading] = useState<boolean>(false);
   const [listings, setListings] = useState(Array<IListing>);
-
-  console.log(listings)
+  const [showMore, setShowMore] = useState<boolean>(false);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -77,6 +76,20 @@ export default function Search(): JSX.Element {
     navigate(`/search?${searchQuery}`);
   };
 
+  const showMoreClickHandler = async () => {
+    const numberOfListings = listings.length;
+    const startIndex = numberOfListings;
+    const urlParams = new URLSearchParams(location.search);
+    urlParams.set('startIndex', startIndex.toString());
+    const searchQuery = urlParams.toString();
+    const res = await fetch(`api/listing/get?${searchQuery}`);
+    const data = await res.json();
+    if (data.length < 9) {
+      setShowMore(false);
+    }
+    setListings([...listings, ...data]);
+  };
+
   useEffect(() => {
     const url = new URLSearchParams(location.search);
     const searchTermFromUrl = url.get('searchTerm');
@@ -109,9 +122,15 @@ export default function Search(): JSX.Element {
 
     const fetchListings = async () => {
       setLoading(true);
+      setShowMore(false);
       const searchQuery = url.toString();
       const res = await fetch(`/api/listing/get?${searchQuery}`);
       const data = await res.json();
+      if (data.length > 8) {
+        setShowMore(true);
+      } else {
+        setShowMore(false);
+      }
       setListings(data);
       setLoading(false);
     };
@@ -215,20 +234,33 @@ export default function Search(): JSX.Element {
           </button>
         </form>
       </div>
-      <div className='flex-1'>
+      <div className="flex-1">
         <h1 className="text-3xl font-semibold border-b p-3 text-slate-700 mt-5">
           Listing Results:
         </h1>
-        <div className='p-7 flex flex-wrap gap-4'>
+        <div className="p-7 flex flex-wrap gap-4">
           {!loading && listings.length === 0 && (
-            <p className='text-xl text-slate-700'>No Listing found!</p>
+            <p className="text-xl text-slate-700">No Listing found!</p>
           )}
           {loading && (
-            <p className='text-xl text-slate-700 text-center w-full'>Loading...</p>
+            <p className="text-xl text-slate-700 text-center w-full">
+              Loading...
+            </p>
           )}
-          {!loading && listings && listings.map((listing) => (
-            <ListingItem key={listing._id} listing={listing as IListing} />
-          ))}
+          {!loading &&
+            listings &&
+            listings.map((listing) => (
+              <ListingItem key={listing._id} listing={listing as IListing} />
+            ))}
+
+          {showMore && (
+            <button
+              onClick={showMoreClickHandler}
+              className="text-green-700 hover:underline p-7 text-center w-full"
+            >
+              Show More
+            </button>
+          )}
         </div>
       </div>
     </div>
