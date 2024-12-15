@@ -44,7 +44,6 @@ export default function UpdateListing(): JSX.Element {
     isFurnished: false,
     imageUrls: [],
   });
-  console.log(formData, 'formData');
 
   const [imageUploadError, setImageUploadError] = useState<string>('');
   const [uploading, setUploading] = useState<boolean>(false);
