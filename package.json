@@ -6,7 +6,8 @@
   "scripts": {
     "build": "npx tsc -p .",
     "dev": "nodemon dist/index.js",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "build-prod": "npm install && npm install --prefix client && npm run build --prefix client"
   },
   "keywords": [],
   "author": "",

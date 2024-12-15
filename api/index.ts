@@ -5,6 +5,7 @@ import userRouter from './routes/user.route';
 import authRouter from './routes/auth.route';
 import listingRouter from './routes/listing.route';
 import cookieParser from 'cookie-parser';
+import path from 'path';
 
 dotenv.config();
 
@@ -14,6 +15,8 @@ mongoose
     console.log('Connected to MongoDB');
   })
   .catch((err) => console.log(err));
+
+const __dirname = path.resolve();
 
 const app: Express = express();
 
@@ -28,6 +31,12 @@ app.listen(3000, () => {
 app.use('/api/user', userRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/listing', listingRouter);
+
+app.use(express.static(path.join(__dirname, '/client/dist')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
+});
 
 // middleware to handle errors
 app.use((err: any, _req: any, res: any, _next: any) => {
